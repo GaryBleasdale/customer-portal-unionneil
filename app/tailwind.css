@@ -616,12 +616,12 @@ body {
   position: fixed;
 }
 
-.absolute {
-  position: absolute;
-}
-
 .relative {
   position: relative;
+}
+
+.top-0 {
+  top: 0px;
 }
 
 .mx-auto {
@@ -673,6 +673,10 @@ body {
   margin-top: 2rem;
 }
 
+.mt-\[84px\] {
+  margin-top: 84px;
+}
+
 .block {
   display: block;
 }
@@ -693,10 +697,6 @@ body {
   display: grid;
 }
 
-.h-16 {
-  height: 4rem;
-}
-
 .h-full {
   height: 100%;
 }
@@ -709,10 +709,6 @@ body {
   min-height: 100vh;
 }
 
-.min-h-\[calc\(100vh-var\(--computed-navbar-height\)\)\] {
-  min-height: calc(100vh - var(--computed-navbar-height));
-}
-
 .w-\[90px\] {
   width: 90px;
 }
@@ -721,8 +717,16 @@ body {
   width: 100%;
 }
 
+.w-\[60px\] {
+  width: 60px;
+}
+
 .max-w-2xl {
   max-width: 42rem;
+}
+
+.max-w-4xl {
+  max-width: 56rem;
 }
 
 .max-w-7xl {
@@ -731,10 +735,6 @@ body {
 
 .max-w-md {
   max-width: 28rem;
-}
-
-.max-w-4xl {
-  max-width: 56rem;
 }
 
 .flex-1 {
@@ -983,6 +983,11 @@ body {
   padding-bottom: 0.5rem;
 }
 
+.py-3 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
 .py-5 {
   padding-top: 1.25rem;
   padding-bottom: 1.25rem;
@@ -996,11 +1001,6 @@ body {
 .py-8 {
   padding-top: 2rem;
   padding-bottom: 2rem;
-}
-
-.py-3 {
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
 }
 
 .pl-5 {
@@ -1330,6 +1330,14 @@ body {
 @media (min-width: 768px) {
   .md\:col-span-2 {
     grid-column: span 2 / span 2;
+  }
+
+  .md\:mt-\[114px\] {
+    margin-top: 114px;
+  }
+
+  .md\:w-\[90px\] {
+    width: 90px;
   }
 
   .md\:grid-cols-2 {

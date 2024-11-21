@@ -33,8 +33,8 @@ export default function App() {
         <Links />
       </head>
       <body className="min-h-screen bg-gray-50 font-lato">
-        <Navbar user={user} />
-        <main>
+        <Navbar user={user}/>
+        <main className="mt-[84px] md:mt-[114px]">
           <Outlet />
         </main>
         <ScrollRestoration />

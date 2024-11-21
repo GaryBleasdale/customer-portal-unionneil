@@ -14,7 +14,7 @@ type NavbarProps = {
 
 export function Navbar({ user }: NavbarProps) {
   return (
-    <nav className="bg-white shadow fixed w-full">
+    <nav className="bg-white shadow fixed w-full top-0">
       <div className="max-w-4xl mx-auto px-4 py-3 sm:px-6 lg:px-8">
         <div className="flex justify-between">
           <div className="flex">
@@ -23,7 +23,7 @@ export function Navbar({ user }: NavbarProps) {
                 <img
                   src={PortalUNLogo}
                   alt="PortalUN Logo"
-                  className="ml-2 w-[90px]"
+                  className="ml-2 w-[60px] md:w-[90px]"
                 />
               </Link>
             </div>

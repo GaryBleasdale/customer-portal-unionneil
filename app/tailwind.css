@@ -612,6 +612,14 @@ body {
   border-width: 0;
 }
 
+.fixed {
+  position: fixed;
+}
+
+.absolute {
+  position: absolute;
+}
+
 .relative {
   position: relative;
 }
@@ -635,6 +643,10 @@ body {
 
 .mb-8 {
   margin-bottom: 2rem;
+}
+
+.ml-2 {
+  margin-left: 0.5rem;
 }
 
 .ml-3 {
@@ -697,6 +709,14 @@ body {
   min-height: 100vh;
 }
 
+.min-h-\[calc\(100vh-var\(--computed-navbar-height\)\)\] {
+  min-height: calc(100vh - var(--computed-navbar-height));
+}
+
+.w-\[90px\] {
+  width: 90px;
+}
+
 .w-full {
   width: 100%;
 }
@@ -711,6 +731,10 @@ body {
 
 .max-w-md {
   max-width: 28rem;
+}
+
+.max-w-4xl {
+  max-width: 56rem;
 }
 
 .flex-1 {
@@ -974,6 +998,11 @@ body {
   padding-bottom: 2rem;
 }
 
+.py-3 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
 .pl-5 {
   padding-left: 1.25rem;
 }
@@ -984,6 +1013,10 @@ body {
 
 .text-center {
   text-align: center;
+}
+
+.font-lato {
+  font-family: Lato, sans-serif;
 }
 
 .text-2xl {
@@ -1092,6 +1125,11 @@ body {
 .text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+
+.text-stone-100 {
+  --tw-text-opacity: 1;
+  color: rgb(245 245 244 / var(--tw-text-opacity, 1));
 }
 
 .placeholder-gray-400::-moz-placeholder {

@@ -1,52 +1,61 @@
-import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node'
-import { Form, useActionData, useLocation } from '@remix-run/react'
-import { createUserSession, getUserFromSession, verifyPassword } from '~/utils/auth.server'
-import { prisma } from '~/utils/prisma.server'
-import { Link } from '@remix-run/react'
+import {
+  json,
+  redirect,
+  type ActionFunctionArgs,
+  type LoaderFunctionArgs,
+} from "@remix-run/node";
+import { Form, useActionData, useLocation } from "@remix-run/react";
+import {
+  createUserSession,
+  getUserFromSession,
+  verifyPassword,
+} from "~/utils/auth.server";
+import { prisma } from "~/utils/prisma.server";
+import { Link } from "@remix-run/react";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const user = await getUserFromSession(request)
+  const user = await getUserFromSession(request);
   if (user) {
-    return redirect(user.role === 'ADMIN' ? '/admin' : '/dashboard')
+    return redirect(user.role === "ADMIN" ? "/admin" : "/dashboard");
   }
-  return null
+  return null;
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData()
-  const email = formData.get('email')
-  const password = formData.get('password')
+  const formData = await request.formData();
+  const email = formData.get("email");
+  const password = formData.get("password");
 
   if (!email || !password) {
-    return json({ error: 'Email and password are required' }, { status: 400 })
+    return json({ error: "Email and password are required" }, { status: 400 });
   }
 
   const user = await prisma.user.findUnique({
     where: { email: email.toString() },
-  })
+  });
 
   if (!user) {
-    return json({ error: 'Invalid email or password' }, { status: 400 })
+    return json({ error: "Invalid email or password" }, { status: 400 });
   }
 
   const isValidPassword = await verifyPassword(
     password.toString(),
     user.password
-  )
+  );
 
   if (!isValidPassword) {
-    return json({ error: 'Invalid email or password' }, { status: 400 })
+    return json({ error: "Invalid email or password" }, { status: 400 });
   }
 
-  return createUserSession(user.id, user.role)
+  return createUserSession(user.id, user.role);
 }
 
 export default function Login() {
-  const actionData = useActionData<typeof action>()
-  const location = useLocation()
+  const actionData = useActionData<typeof action>();
+  const location = useLocation();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 ">
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -54,7 +63,8 @@ export default function Login() {
           </h2>
         </div>
 
-        {new URLSearchParams(location.search).get('passwordReset') === 'success' && (
+        {new URLSearchParams(location.search).get("passwordReset") ===
+          "success" && (
           <div className="rounded-md bg-green-50 p-4">
             <div className="flex">
               <div className="ml-3">
@@ -63,7 +73,8 @@ export default function Login() {
                 </h3>
                 <div className="mt-2 text-sm text-green-700">
                   <p>
-                    Your password has been successfully reset. You can now sign in with your new password.
+                    Your password has been successfully reset. You can now sign
+                    in with your new password.
                   </p>
                 </div>
               </div>
@@ -129,5 +140,5 @@ export default function Login() {
         </Form>
       </div>
     </div>
-  )
+  );
 }

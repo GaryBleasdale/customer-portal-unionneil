@@ -13,33 +13,38 @@ type ActionError = {
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const errors: ActionError = {};
-  
+
   // Basic user information
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const name = formData.get("name") as string;
-  
+
   // Patient information
   const cpf = formData.get("cpf") as string;
   const address = formData.get("address") as string;
   const nationality = formData.get("nationality") as string;
-  
+
   // Legal representative information
   const legalRepName = formData.get("legalRepName") as string;
   const legalRepCpf = formData.get("legalRepCpf") as string;
   const legalRepNationality = formData.get("legalRepNationality") as string;
   const legalRepRelationship = formData.get("legalRepRelationship") as string;
   const legalRepEmail = formData.get("legalRepEmail") as string;
-  
+
   // Invoice information
   const invoiceName = formData.get("invoiceName") as string;
   const invoiceCpfCnpj = formData.get("invoiceCpfCnpj") as string;
   const invoiceAddress = formData.get("invoiceAddress") as string;
   const invoiceEmail = formData.get("invoiceEmail") as string;
-  
+
   // Billing emails (comma-separated)
   const billingEmailsStr = formData.get("billingEmails") as string;
-  const billingEmails = billingEmailsStr ? billingEmailsStr.split(",").map(email => email.trim()).filter(Boolean) : [];
+  const billingEmails = billingEmailsStr
+    ? billingEmailsStr
+        .split(",")
+        .map((email) => email.trim())
+        .filter(Boolean)
+    : [];
 
   // Validate required fields
   if (!email) {
@@ -98,24 +103,26 @@ export async function action({ request }: ActionFunctionArgs) {
   } catch (error) {
     console.error("Registration error:", error);
     return json(
-      { errors: { general: "Failed to create user account. Please try again." } },
+      {
+        errors: { general: "Failed to create user account. Please try again." },
+      },
       { status: 500 }
     );
   }
 }
 
-export default function Register() {
+export default function Cadastro() {
   const actionData = useActionData<typeof action>();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 ">
       <div className="max-w-2xl w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Create your account
           </h2>
         </div>
-        
+
         {actionData?.errors?.general && (
           <div className="rounded-md bg-red-50 p-4">
             <div className="flex">
@@ -127,14 +134,17 @@ export default function Register() {
             </div>
           </div>
         )}
-        
+
         <Form method="post" className="mt-8 space-y-6">
           {/* Basic Information */}
           <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="text-lg font-medium mb-4">Patient Information</h3>
             <div className="grid grid-cols-1 gap-4">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Full Name (as shown in documents)
                 </label>
                 <input
@@ -144,9 +154,12 @@ export default function Register() {
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
-              
+
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Email Address *
                 </label>
                 <input
@@ -156,16 +169,23 @@ export default function Register() {
                   autoComplete="email"
                   required
                   className={`mt-1 block w-full rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
-                    actionData?.errors?.email ? 'border-red-300' : 'border-gray-300'
+                    actionData?.errors?.email
+                      ? "border-red-300"
+                      : "border-gray-300"
                   }`}
                 />
                 {actionData?.errors?.email && (
-                  <p className="mt-1 text-sm text-red-600">{actionData.errors.email}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {actionData.errors.email}
+                  </p>
                 )}
               </div>
-              
+
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Password *
                 </label>
                 <input
@@ -175,16 +195,23 @@ export default function Register() {
                   autoComplete="new-password"
                   required
                   className={`mt-1 block w-full rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
-                    actionData?.errors?.password ? 'border-red-300' : 'border-gray-300'
+                    actionData?.errors?.password
+                      ? "border-red-300"
+                      : "border-gray-300"
                   }`}
                 />
                 {actionData?.errors?.password && (
-                  <p className="mt-1 text-sm text-red-600">{actionData.errors.password}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {actionData.errors.password}
+                  </p>
                 )}
               </div>
-              
+
               <div>
-                <label htmlFor="cpf" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="cpf"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   CPF
                 </label>
                 <input
@@ -194,9 +221,12 @@ export default function Register() {
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
-              
+
               <div>
-                <label htmlFor="address" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="address"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Complete Address
                 </label>
                 <textarea
@@ -206,9 +236,12 @@ export default function Register() {
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
-              
+
               <div>
-                <label htmlFor="nationality" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="nationality"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Nationality
                 </label>
                 <input
@@ -223,10 +256,15 @@ export default function Register() {
 
           {/* Legal Representative Information */}
           <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-medium mb-4">Legal Representative Information</h3>
+            <h3 className="text-lg font-medium mb-4">
+              Legal Representative Information
+            </h3>
             <div className="grid grid-cols-1 gap-4">
               <div>
-                <label htmlFor="legalRepName" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="legalRepName"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Full Name
                 </label>
                 <input
@@ -236,9 +274,12 @@ export default function Register() {
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
-              
+
               <div>
-                <label htmlFor="legalRepCpf" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="legalRepCpf"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   CPF
                 </label>
                 <input
@@ -248,9 +289,12 @@ export default function Register() {
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
-              
+
               <div>
-                <label htmlFor="legalRepNationality" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="legalRepNationality"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Nationality
                 </label>
                 <input
@@ -260,9 +304,12 @@ export default function Register() {
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
-              
+
               <div>
-                <label htmlFor="legalRepRelationship" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="legalRepRelationship"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Relationship to Patient
                 </label>
                 <input
@@ -272,9 +319,12 @@ export default function Register() {
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
-              
+
               <div>
-                <label htmlFor="legalRepEmail" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="legalRepEmail"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Email
                 </label>
                 <input
@@ -292,7 +342,10 @@ export default function Register() {
             <h3 className="text-lg font-medium mb-4">Invoice Information</h3>
             <div className="grid grid-cols-1 gap-4">
               <div>
-                <label htmlFor="invoiceName" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="invoiceName"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Name for Invoice (if different from legal representative)
                 </label>
                 <input
@@ -302,9 +355,12 @@ export default function Register() {
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
-              
+
               <div>
-                <label htmlFor="invoiceCpfCnpj" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="invoiceCpfCnpj"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   CPF/CNPJ for Invoice (if different)
                 </label>
                 <input
@@ -314,9 +370,12 @@ export default function Register() {
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
-              
+
               <div>
-                <label htmlFor="invoiceAddress" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="invoiceAddress"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Address for Invoice (if different)
                 </label>
                 <textarea
@@ -326,9 +385,12 @@ export default function Register() {
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
-              
+
               <div>
-                <label htmlFor="invoiceEmail" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="invoiceEmail"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Email for Invoice (if different)
                 </label>
                 <input
@@ -343,9 +405,14 @@ export default function Register() {
 
           {/* Billing Emails */}
           <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-medium mb-4">Monthly Invoice Recipients</h3>
+            <h3 className="text-lg font-medium mb-4">
+              Monthly Invoice Recipients
+            </h3>
             <div>
-              <label htmlFor="billingEmails" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="billingEmails"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Additional Email Addresses (comma-separated)
               </label>
               <input
@@ -356,7 +423,8 @@ export default function Register() {
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
               <p className="mt-2 text-sm text-gray-500">
-                Enter additional email addresses that should receive monthly invoices, separated by commas.
+                Enter additional email addresses that should receive monthly
+                invoices, separated by commas.
               </p>
             </div>
           </div>
@@ -372,5 +440,5 @@ export default function Register() {
         </Form>
       </div>
     </div>
-  )
+  );
 }

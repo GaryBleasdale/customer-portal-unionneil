@@ -1,4 +1,8 @@
-import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
+import type {
+  LinksFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -13,12 +17,12 @@ import { getUserFromSession } from "./utils/auth.server";
 import "./tailwind.css";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const user = await getUserFromSession(request)
-  return { user }
+  const user = await getUserFromSession(request);
+  return { user };
 }
 
 export default function App() {
-  const { user } = useLoaderData<typeof loader>()
+  const { user } = useLoaderData<typeof loader>();
 
   return (
     <html lang="en" className="h-full">
@@ -28,7 +32,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="min-h-screen bg-gray-50">
+      <body className="min-h-screen bg-gray-50 font-lato">
         <Navbar user={user} />
         <main>
           <Outlet />
@@ -40,3 +44,29 @@ export default function App() {
     </html>
   );
 }
+
+export const links: LinksFunction = () => {
+  return [
+    {
+      rel: "preconnect",
+      href: "https://fonts.googleapis.com",
+      crossOrigin: "anonymous",
+    },
+    {
+      rel: "preconnect",
+      href: "https://fonts.gstatic.com",
+      crossOrigin: "anonymous",
+    },
+    {
+      rel: "stylesheet",
+      href: "https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap",
+    },
+  ];
+};
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Portal Union Neil" },
+    { name: "description", content: "Portal de Clientes da Union Neil" },
+  ];
+};

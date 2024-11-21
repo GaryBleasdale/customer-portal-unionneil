@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "prisma generate && remix vite:build",
-    "dev": "remix vite:dev",
+    "dev": "concurrently \"remix vite:dev\" \"tailwindcss -i ./app/styles/globals.css -o ./app/tailwind.css --watch\"",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "netlify serve",
     "typecheck": "tsc",
@@ -25,6 +25,7 @@
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "concurrently": "^9.1.0",
     "isbot": "^4.1.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.460.0",

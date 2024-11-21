@@ -1,41 +1,24 @@
 import type { MetaFunction } from "@remix-run/node";
+import { type LoaderFunctionArgs, redirect } from '@remix-run/node'
+import { getUserFromSession } from '~/utils/auth.server'
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
+    { title: "Customer Portal" },
+    { name: "description", content: "Welcome to the Customer Portal" },
   ];
 };
 
+export async function loader({ request }: LoaderFunctionArgs) {
+  const user = await getUserFromSession(request)
+  
+  if (user) {
+    return redirect(user.role === 'ADMIN' ? '/admin' : '/dashboard')
+  }
+
+  return redirect('/login')
+}
+
 export default function Index() {
-  return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
-      <h1>Welcome to Remix</h1>
-      <ul>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/blog"
-            rel="noreferrer"
-          >
-            15m Quickstart Blog Tutorial
-          </a>
-        </li>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/jokes"
-            rel="noreferrer"
-          >
-            Deep Dive Jokes App Tutorial
-          </a>
-        </li>
-        <li>
-          <a target="_blank" href="https://remix.run/docs" rel="noreferrer">
-            Remix Docs
-          </a>
-        </li>
-      </ul>
-    </div>
-  );
+  return null
 }

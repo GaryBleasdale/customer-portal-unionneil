@@ -1,0 +1,61 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  email       String    @unique
+  password    String
+  name        String?
+  role        String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  lastLoginAt DateTime?
+  
+  // Patient Information
+  cpf         String?
+  address     String?
+  nationality String?
+  
+  // Legal Representative Information
+  legalRepName        String?
+  legalRepCpf         String?
+  legalRepNationality String?
+  legalRepRelationship String?
+  legalRepEmail       String?
+  
+  // Invoice Information (Tomador de serviços)
+  invoiceName         String? // Name for invoice if different from legal rep
+  invoiceCpfCnpj      String? // CPF/CNPJ for invoice if different
+  invoiceAddress      String? // Address for invoice if different
+  invoiceEmail        String? // Email for invoice if different
+  
+  // Billing Information
+  billingEmails       String[] @default([]) // Array of emails for monthly billing
+
+  // Password Reset
+  passwordResetToken  PasswordResetToken?
+  
+  @@map("user")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  userId    String   @unique @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("passwordResetToken")
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
+}

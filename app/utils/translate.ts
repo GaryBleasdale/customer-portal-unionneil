@@ -1,9 +1,16 @@
 import ptBr from "../translations/pt-BR.json";
 import en from "../translations/en.json";
 
+const isServer = typeof window === 'undefined';
+
 export default function T(text:string) {
-  const broswerLang = navigator.language;
-  switch (broswerLang) {
+
+  if (isServer) {
+    return "";
+  }
+
+  const browserLang = navigator.language;
+  switch (browserLang) {
     case "pt-BR":
     case "pt":
     case "pt-PT":
@@ -18,7 +25,7 @@ export default function T(text:string) {
     case "en-ZA":
       return translator(text, en);
     default:
-      return "";
+      return translator(text, ptBr);
   }
 }
 

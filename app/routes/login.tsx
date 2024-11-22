@@ -12,6 +12,7 @@ import {
 } from "~/utils/auth.server";
 import { prisma } from "~/utils/prisma.server";
 import { Link } from "@remix-run/react";
+import T from "~/utils/translate";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const user = await getUserFromSession(request);
@@ -59,7 +60,7 @@ export default function Login() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your account
+            {T("login.sign-in-to-your-account")}
           </h2>
         </div>
 
@@ -69,13 +70,10 @@ export default function Login() {
             <div className="flex">
               <div className="ml-3">
                 <h3 className="text-sm font-medium text-green-800">
-                  Password reset successful
+                  {T("login.password-reset-success")}
                 </h3>
                 <div className="mt-2 text-sm text-green-700">
-                  <p>
-                    Your password has been successfully reset. You can now sign
-                    in with your new password.
-                  </p>
+                  <p>{T("login.password-reset-message")}</p>
                 </div>
               </div>
             </div>
@@ -90,7 +88,7 @@ export default function Login() {
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="email" className="sr-only">
-                Email address
+                {T("login.email-address")}
               </label>
               <input
                 id="email"
@@ -99,12 +97,12 @@ export default function Login() {
                 autoComplete="email"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
+                placeholder={T("login.email-address")}
               />
             </div>
             <div>
               <label htmlFor="password" className="sr-only">
-                Password
+                {T("login.password")}
               </label>
               <input
                 id="password"
@@ -113,7 +111,7 @@ export default function Login() {
                 autoComplete="current-password"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
+                placeholder={T("login.password")}
               />
             </div>
           </div>
@@ -124,7 +122,7 @@ export default function Login() {
                 to="/reset-password"
                 className="font-medium text-blue-600 hover:text-blue-500"
               >
-                Forgot your password?
+                {T("login.forgot-password")}
               </Link>
             </div>
           </div>
@@ -134,7 +132,7 @@ export default function Login() {
               type="submit"
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              Sign in
+              {T("login.sign-in")}
             </button>
           </div>
         </Form>

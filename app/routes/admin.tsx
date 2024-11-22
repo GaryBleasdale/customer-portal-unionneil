@@ -1,112 +1,146 @@
-import { json, type LoaderFunctionArgs } from '@remix-run/node'
-import { useLoaderData, Link, Outlet, useLocation } from '@remix-run/react'
-import { requireAdmin } from '~/utils/auth.server'
+import { json, redirect, type LoaderFunctionArgs } from '@remix-run/node'
+import { Form, Link, useLoaderData } from '@remix-run/react'
+import { requireUser } from '~/utils/auth.server'
 import { prisma } from '~/utils/prisma.server'
+import T from '~/utils/translate'
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  // This will redirect to /login if not authenticated or not an admin
-  await requireAdmin(request)
+  const user = await requireUser(request)
+  if (user.role !== 'ADMIN') {
+    throw new Response('Unauthorized', { status: 403 })
+  }
 
   const customers = await prisma.user.findMany({
     where: { role: 'CUSTOMER' },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      createdAt: true,
-      lastLoginAt: true,
-    },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: 'desc' }
   })
 
-  const stats = {
-    totalCustomers: customers.length,
-    newCustomersToday: customers.filter(
-      c => c.createdAt.toDateString() === new Date().toDateString()
-    ).length,
-    activeCustomers: customers.filter(
-      c => c.lastLoginAt && new Date(c.lastLoginAt).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000
-    ).length,
-  }
-
-  return json({ customers, stats })
+  return json({ customers })
 }
 
 export default function Admin() {
-  const { customers, stats } = useLoaderData<typeof loader>()
-  const location = useLocation()
-  const isCustomerDetails = location.pathname.includes('/customers/')
-
-  if (isCustomerDetails) {
-    return <Outlet />
-  }
+  const { customers } = useLoaderData<typeof loader>()
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
-      
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-2">Total Customers</h2>
-          <p className="text-3xl">{stats.totalCustomers}</p>
+    <div className="py-10">
+      <header>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 className="text-3xl font-bold leading-tight text-gray-900">
+            {T('admin.title')}
+          </h1>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-2">New Customers Today</h2>
-          <p className="text-3xl">{stats.newCustomersToday}</p>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-2">Active Past Week</h2>
-          <p className="text-3xl">{stats.activeCustomers}</p>
-        </div>
-      </div>
+      </header>
+      <main>
+        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+          <div className="px-4 py-8 sm:px-0">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold text-gray-900">
+                {T('admin.customers')}
+              </h2>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder={T('admin.search')}
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+            </div>
 
-      <div className="bg-white rounded-lg shadow">
-        <h2 className="text-lg font-semibold p-4 border-b">Customer List</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gray-50">
-                <th className="px-4 py-2 text-left">Name</th>
-                <th className="px-4 py-2 text-left">Email</th>
-                <th className="px-4 py-2 text-left">Joined</th>
-                <th className="px-4 py-2 text-left">Last Login</th>
-                <th className="px-4 py-2 text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {customers.map(customer => (
-                <tr key={customer.id} className="border-t hover:bg-gray-50">
-                  <td className="px-4 py-2">{customer.name || 'N/A'}</td>
-                  <td className="px-4 py-2">{customer.email}</td>
-                  <td className="px-4 py-2">
-                    {new Date(customer.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-2">
-                    {customer.lastLoginAt 
-                      ? new Date(customer.lastLoginAt).toLocaleString()
-                      : 'Never'}
-                  </td>
-                  <td className="px-4 py-2">
-                    <Link
-                      to={`customers/${customer.id}`}
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      View Details
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-              {customers.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="px-4 py-2 text-center text-sm text-gray-500">
-                    No customers found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+            <div className="flex flex-col">
+              <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                  <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            {T('admin.customer.name')}
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            {T('admin.customer.email')}
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            {T('admin.customer.cpf')}
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            {T('admin.customer.created-at')}
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            {T('admin.customer.status')}
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            {T('admin.customer.actions')}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {customers.length === 0 ? (
+                          <tr>
+                            <td
+                              colSpan={6}
+                              className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center"
+                            >
+                              {T('admin.no-customers')}
+                            </td>
+                          </tr>
+                        ) : (
+                          customers.map((customer) => (
+                            <tr key={customer.id}>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {customer.name || '-'}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {customer.email}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {customer.cpf || '-'}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {new Date(customer.createdAt).toLocaleDateString()}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                  {T('admin.customer.active')}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <Link
+                                  to={`/admin/customers/${customer.id}`}
+                                  className="text-blue-600 hover:text-blue-900 mr-4"
+                                >
+                                  {T('admin.customer.view')}
+                                </Link>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   )
 }

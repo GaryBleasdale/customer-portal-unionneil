@@ -1,0 +1,134 @@
+{
+    "login": {
+        "sign-in-to-your-account": "Sign in to your account",
+        "email-address": "Email address",
+        "password": "Password",
+        "sign-in": "Sign in",
+        "register": "Register",
+        "forgot-password": "Forgot your password?",
+        "password-reset-success": "Password reset successful",
+        "password-reset-message": "Your password has been successfully reset. You can now sign in with your new password."
+    },
+    "navbar": {
+        "dashboard": "Dashboard",
+        "admin": "Admin",
+        "profile": "Profile",
+        "settings": "Settings",
+        "sign-out": "Sign out"
+    },
+    "reset-password": {
+        "title": "Reset your password",
+        "subtitle": "Enter your email address and we'll send you a link to reset your password.",
+        "email-sent": "Password reset email sent",
+        "email-sent-message": "Check your email for a link to reset your password. If it doesn't appear within a few minutes, check your spam folder.",
+        "new-password": "New Password",
+        "confirm-password": "Confirm Password",
+        "submit": "Reset Password",
+        "back-to-login": "Back to login",
+        "passwords-must-match": "Passwords must match",
+        "password-requirements": "Password must be at least 8 characters long",
+        "invalid-token": "Invalid or expired reset token",
+        "success-message": "Your password has been reset successfully. You can now login with your new password."
+    },
+    "admin": {
+        "title": "Admin Dashboard",
+        "customers": "Customers",
+        "search": "Search customers...",
+        "customer-details": "Customer Details",
+        "no-customers": "No customers found",
+        "customer": {
+            "name": "Name",
+            "email": "Email",
+            "cpf": "CPF",
+            "created-at": "Created At",
+            "status": "Status",
+            "actions": "Actions",
+            "view": "View Details",
+            "edit": "Edit",
+            "delete": "Delete",
+            "active": "Active",
+            "inactive": "Inactive"
+        },
+        "setup": {
+            "title": "Admin Setup",
+            "subtitle": "Create your admin account",
+            "success": "Admin account created successfully",
+            "already-exists": "Admin account already exists"
+        }
+    },
+    "cadastro": {
+        "create-account": "Create your account",
+        "patient-info": "Patient Information",
+        "full-name": "Full Name (as shown in documents)",
+        "email-address": "Email Address *",
+        "password": "Password *",
+        "cpf": "CPF",
+        "complete-address": "Complete Address",
+        "nationality": "Nationality",
+        "legal-rep-info": "Legal Representative Information",
+        "legal-rep-name": "Full Name",
+        "legal-rep-cpf": "CPF",
+        "legal-rep-nationality": "Nationality",
+        "legal-rep-relationship": "Relationship to Patient",
+        "legal-rep-email": "Email",
+        "invoice-info": "Invoice Information",
+        "invoice-name": "Name",
+        "invoice-cpf-cnpj": "CPF/CNPJ",
+        "invoice-address": "Address",
+        "invoice-email": "Email",
+        "billing-emails": "Additional Billing Emails (comma-separated)",
+        "submit": "Create Account"
+    },
+    "dashboard": {
+        "title": "Customer Dashboard",
+        "patient-info": {
+            "title": "Patient Information",
+            "full-name": "Full Name",
+            "email": "Email",
+            "cpf": "CPF",
+            "nationality": "Nationality",
+            "address": "Address"
+        },
+        "legal-rep-info": {
+            "title": "Legal Representative Information",
+            "full-name": "Full Name",
+            "cpf": "CPF",
+            "nationality": "Nationality",
+            "relationship": "Relationship to Patient",
+            "email": "Email"
+        },
+        "invoice-info": {
+            "title": "Invoice Information",
+            "name": "Name for Invoice",
+            "cpf-cnpj": "CPF/CNPJ",
+            "address": "Address",
+            "email": "Email",
+            "same-as-legal-rep": "Same as legal representative"
+        },
+        "billing-recipients": {
+            "title": "Monthly Invoice Recipients",
+            "additional-emails": "Additional Email Recipients",
+            "no-recipients": "No additional recipients"
+        },
+        "account-info": {
+            "title": "Account Information",
+            "member-since": "Member Since",
+            "last-login": "Last Login",
+            "status": "Account Status",
+            "active": "Active",
+            "never": "Never"
+        },
+        "not-provided": "Not provided"
+    },
+    "errors": {
+        "email-required": "Email is required",
+        "invalid-email": "Invalid email format",
+        "password-required": "Password is required",
+        "password-length": "Password must be at least 8 characters long",
+        "email-exists": "A user with this email already exists",
+        "user-not-found": "User not found",
+        "invalid-credentials": "Invalid email or password",
+        "server-error": "An error occurred. Please try again later.",
+        "unauthorized": "You are not authorized to access this page"
+    }
+}

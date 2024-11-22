@@ -1,0 +1,134 @@
+{
+    "login": {
+        "sign-in-to-your-account": "Entrar na sua conta",
+        "email-address": "Endereço de email",
+        "password": "Senha",
+        "sign-in": "Entrar",
+        "register": "Cadastro",
+        "forgot-password": "Esqueceu sua senha?",
+        "password-reset-success": "Senha redefinida com sucesso",
+        "password-reset-message": "Sua senha foi redefinida com sucesso. Você já pode entrar com sua nova senha."
+    },
+    "navbar": {
+        "dashboard": "Painel",
+        "admin": "Admin",
+        "profile": "Perfil",
+        "settings": "Configurações",
+        "sign-out": "Sair"
+    },
+    "reset-password": {
+        "title": "Redefinir sua senha",
+        "subtitle": "Digite seu endereço de email e enviaremos um link para redefinir sua senha.",
+        "email-sent": "Email de redefinição de senha enviado",
+        "email-sent-message": "Verifique seu email para obter um link para redefinir sua senha. Se não aparecer em alguns minutos, verifique sua pasta de spam.",
+        "new-password": "Nova Senha",
+        "confirm-password": "Confirmar Senha",
+        "submit": "Redefinir Senha",
+        "back-to-login": "Voltar para o login",
+        "passwords-must-match": "As senhas devem ser iguais",
+        "password-requirements": "A senha deve ter pelo menos 8 caracteres",
+        "invalid-token": "Token de redefinição inválido ou expirado",
+        "success-message": "Sua senha foi redefinida com sucesso. Você já pode fazer login com sua nova senha."
+    },
+    "admin": {
+        "title": "Painel Administrativo",
+        "customers": "Clientes",
+        "search": "Pesquisar clientes...",
+        "customer-details": "Detalhes do Cliente",
+        "no-customers": "Nenhum cliente encontrado",
+        "customer": {
+            "name": "Nome",
+            "email": "Email",
+            "cpf": "CPF",
+            "created-at": "Criado em",
+            "status": "Status",
+            "actions": "Ações",
+            "view": "Ver Detalhes",
+            "edit": "Editar",
+            "delete": "Excluir",
+            "active": "Ativo",
+            "inactive": "Inativo"
+        },
+        "setup": {
+            "title": "Configuração do Admin",
+            "subtitle": "Crie sua conta de administrador",
+            "success": "Conta de administrador criada com sucesso",
+            "already-exists": "Conta de administrador já existe"
+        }
+    },
+    "cadastro": {
+        "create-account": "Criar sua conta",
+        "patient-info": "Informações do Paciente",
+        "full-name": "Nome Completo (como consta nos documentos)",
+        "email-address": "Endereço de Email *",
+        "password": "Senha *",
+        "cpf": "CPF",
+        "complete-address": "Endereço Completo",
+        "nationality": "Nacionalidade",
+        "legal-rep-info": "Informações do Representante Legal",
+        "legal-rep-name": "Nome Completo",
+        "legal-rep-cpf": "CPF",
+        "legal-rep-nationality": "Nacionalidade",
+        "legal-rep-relationship": "Relação com o Paciente",
+        "legal-rep-email": "Email",
+        "invoice-info": "Informações de Faturamento",
+        "invoice-name": "Nome",
+        "invoice-cpf-cnpj": "CPF/CNPJ",
+        "invoice-address": "Endereço",
+        "invoice-email": "Email",
+        "billing-emails": "Emails Adicionais para Faturamento (separados por vírgula)",
+        "submit": "Criar Conta"
+    },
+    "dashboard": {
+        "title": "Painel do Cliente",
+        "patient-info": {
+            "title": "Informações do Paciente",
+            "full-name": "Nome Completo",
+            "email": "Email",
+            "cpf": "CPF",
+            "nationality": "Nacionalidade",
+            "address": "Endereço"
+        },
+        "legal-rep-info": {
+            "title": "Informações do Representante Legal",
+            "full-name": "Nome Completo",
+            "cpf": "CPF",
+            "nationality": "Nacionalidade",
+            "relationship": "Relação com o Paciente",
+            "email": "Email"
+        },
+        "invoice-info": {
+            "title": "Informações de Faturamento",
+            "name": "Nome para Faturamento",
+            "cpf-cnpj": "CPF/CNPJ",
+            "address": "Endereço",
+            "email": "Email",
+            "same-as-legal-rep": "Igual ao representante legal"
+        },
+        "billing-recipients": {
+            "title": "Destinatários de Fatura Mensal",
+            "additional-emails": "Emails Adicionais",
+            "no-recipients": "Sem destinatários adicionais"
+        },
+        "account-info": {
+            "title": "Informações da Conta",
+            "member-since": "Membro Desde",
+            "last-login": "Último Acesso",
+            "status": "Status da Conta",
+            "active": "Ativa",
+            "never": "Nunca"
+        },
+        "not-provided": "Não fornecido"
+    },
+    "errors": {
+        "email-required": "Email é obrigatório",
+        "invalid-email": "Formato de email inválido",
+        "password-required": "Senha é obrigatória",
+        "password-length": "A senha deve ter pelo menos 8 caracteres",
+        "email-exists": "Já existe um usuário com este email",
+        "user-not-found": "Usuário não encontrado",
+        "invalid-credentials": "Email ou senha inválidos",
+        "server-error": "Ocorreu um erro. Por favor, tente novamente mais tarde.",
+        "unauthorized": "Você não está autorizado a acessar esta página"
+    }
+}

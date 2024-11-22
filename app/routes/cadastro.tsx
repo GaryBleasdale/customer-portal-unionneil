@@ -1,13 +1,22 @@
 import { json, redirect, type ActionFunctionArgs } from "@remix-run/node";
+import type { MetaFunction } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 import { prisma } from "~/utils/prisma.server";
 import { hashPassword } from "~/utils/auth.server";
+import T from "~/utils/translate";
 
 type ActionError = {
   email?: string;
   password?: string;
   general?: string;
   fields?: { [key: string]: string };
+};
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Cadastro | Portal Union Neil" },
+    { name: "description", content: "Cadastro de Clientes da Union Neil" },
+  ];
 };
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -119,7 +128,7 @@ export default function Cadastro() {
       <div className="max-w-2xl w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create your account
+            {T("cadastro.create-account")}
           </h2>
         </div>
 
@@ -128,7 +137,7 @@ export default function Cadastro() {
             <div className="flex">
               <div className="ml-3">
                 <h3 className="text-sm font-medium text-red-800">
-                  {actionData.errors.general}
+                  {T(`errors.${actionData.errors.general}`)}
                 </h3>
               </div>
             </div>
@@ -138,14 +147,16 @@ export default function Cadastro() {
         <Form method="post" className="mt-8 space-y-6">
           {/* Basic Information */}
           <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-medium mb-4">Patient Information</h3>
+            <h3 className="text-lg font-medium mb-4">
+              {T("cadastro.patient-info")}
+            </h3>
             <div className="grid grid-cols-1 gap-4">
               <div>
                 <label
                   htmlFor="name"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Full Name (as shown in documents)
+                  {T("cadastro.full-name")}
                 </label>
                 <input
                   id="name"
@@ -160,7 +171,7 @@ export default function Cadastro() {
                   htmlFor="email"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Email Address *
+                  {T("cadastro.email-address")}
                 </label>
                 <input
                   id="email"
@@ -176,7 +187,7 @@ export default function Cadastro() {
                 />
                 {actionData?.errors?.email && (
                   <p className="mt-1 text-sm text-red-600">
-                    {actionData.errors.email}
+                    {T(`errors.${actionData.errors.email}`)}
                   </p>
                 )}
               </div>
@@ -186,7 +197,7 @@ export default function Cadastro() {
                   htmlFor="password"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Password *
+                  {T("cadastro.password")}
                 </label>
                 <input
                   id="password"
@@ -202,7 +213,7 @@ export default function Cadastro() {
                 />
                 {actionData?.errors?.password && (
                   <p className="mt-1 text-sm text-red-600">
-                    {actionData.errors.password}
+                    {T(`errors.${actionData.errors.password}`)}
                   </p>
                 )}
               </div>
@@ -212,7 +223,7 @@ export default function Cadastro() {
                   htmlFor="cpf"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  CPF
+                  {T("cadastro.cpf")}
                 </label>
                 <input
                   id="cpf"
@@ -227,7 +238,7 @@ export default function Cadastro() {
                   htmlFor="address"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Complete Address
+                  {T("cadastro.complete-address")}
                 </label>
                 <textarea
                   id="address"
@@ -242,7 +253,7 @@ export default function Cadastro() {
                   htmlFor="nationality"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Nationality
+                  {T("cadastro.nationality")}
                 </label>
                 <input
                   id="nationality"
@@ -257,7 +268,7 @@ export default function Cadastro() {
           {/* Legal Representative Information */}
           <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="text-lg font-medium mb-4">
-              Legal Representative Information
+              {T("cadastro.legal-rep-info")}
             </h3>
             <div className="grid grid-cols-1 gap-4">
               <div>
@@ -265,7 +276,7 @@ export default function Cadastro() {
                   htmlFor="legalRepName"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Full Name
+                  {T("cadastro.legal-rep-name")}
                 </label>
                 <input
                   id="legalRepName"
@@ -280,7 +291,7 @@ export default function Cadastro() {
                   htmlFor="legalRepCpf"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  CPF
+                  {T("cadastro.legal-rep-cpf")}
                 </label>
                 <input
                   id="legalRepCpf"
@@ -295,7 +306,7 @@ export default function Cadastro() {
                   htmlFor="legalRepNationality"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Nationality
+                  {T("cadastro.legal-rep-nationality")}
                 </label>
                 <input
                   id="legalRepNationality"
@@ -310,7 +321,7 @@ export default function Cadastro() {
                   htmlFor="legalRepRelationship"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Relationship to Patient
+                  {T("cadastro.legal-rep-relationship")}
                 </label>
                 <input
                   id="legalRepRelationship"
@@ -325,7 +336,7 @@ export default function Cadastro() {
                   htmlFor="legalRepEmail"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Email
+                  {T("cadastro.legal-rep-email")}
                 </label>
                 <input
                   id="legalRepEmail"
@@ -339,14 +350,16 @@ export default function Cadastro() {
 
           {/* Invoice Information */}
           <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-medium mb-4">Invoice Information</h3>
+            <h3 className="text-lg font-medium mb-4">
+              {T("cadastro.invoice-info")}
+            </h3>
             <div className="grid grid-cols-1 gap-4">
               <div>
                 <label
                   htmlFor="invoiceName"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Name for Invoice (if different from legal representative)
+                  {T("cadastro.invoice-name")}
                 </label>
                 <input
                   id="invoiceName"
@@ -361,7 +374,7 @@ export default function Cadastro() {
                   htmlFor="invoiceCpfCnpj"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  CPF/CNPJ for Invoice (if different)
+                  {T("cadastro.invoice-cpf-cnpj")}
                 </label>
                 <input
                   id="invoiceCpfCnpj"
@@ -376,7 +389,7 @@ export default function Cadastro() {
                   htmlFor="invoiceAddress"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Address for Invoice (if different)
+                  {T("cadastro.invoice-address")}
                 </label>
                 <textarea
                   id="invoiceAddress"
@@ -391,7 +404,7 @@ export default function Cadastro() {
                   htmlFor="invoiceEmail"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Email for Invoice (if different)
+                  {T("cadastro.invoice-email")}
                 </label>
                 <input
                   id="invoiceEmail"
@@ -400,32 +413,21 @@ export default function Cadastro() {
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
-            </div>
-          </div>
 
-          {/* Billing Emails */}
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-medium mb-4">
-              Monthly Invoice Recipients
-            </h3>
-            <div>
-              <label
-                htmlFor="billingEmails"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Additional Email Addresses (comma-separated)
-              </label>
-              <input
-                id="billingEmails"
-                name="billingEmails"
-                type="text"
-                placeholder="email1@example.com, email2@example.com"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-              <p className="mt-2 text-sm text-gray-500">
-                Enter additional email addresses that should receive monthly
-                invoices, separated by commas.
-              </p>
+              <div>
+                <label
+                  htmlFor="billingEmails"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  {T("cadastro.billing-emails")}
+                </label>
+                <input
+                  id="billingEmails"
+                  name="billingEmails"
+                  type="text"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
             </div>
           </div>
 
@@ -434,7 +436,7 @@ export default function Cadastro() {
               type="submit"
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              Create Account
+              {T("cadastro.submit")}
             </button>
           </div>
         </Form>

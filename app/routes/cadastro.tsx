@@ -4,6 +4,7 @@ import { Form, useActionData } from "@remix-run/react";
 import { prisma } from "~/utils/prisma.server";
 import { hashPassword } from "~/utils/auth.server";
 import T from "~/utils/translate";
+import { sendNewCustomerAlert } from "~/utils/email.server";
 
 type ActionError = {
   email?: string;
@@ -107,7 +108,7 @@ export async function action({ request }: ActionFunctionArgs) {
         billingEmails,
       },
     });
-
+    sendNewCustomerAlert(name, email);
     return redirect("/login");
   } catch (error) {
     console.error("Registration error:", error);

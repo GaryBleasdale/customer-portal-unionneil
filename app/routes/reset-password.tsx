@@ -3,6 +3,7 @@ import { Form, useActionData, useLocation, Outlet } from "@remix-run/react";
 import { prisma } from "~/utils/prisma.server";
 import { sendPasswordResetEmail } from "~/utils/email.server";
 import T from "~/utils/translate";
+import crypto from "node:crypto";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();

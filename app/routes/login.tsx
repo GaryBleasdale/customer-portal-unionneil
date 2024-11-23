@@ -17,7 +17,7 @@ import T from "~/utils/translate";
 export async function loader({ request }: LoaderFunctionArgs) {
   const user = await getUserFromSession(request);
   if (user) {
-    return redirect(user.role === "ADMIN" ? "/admin" : "/dashboard");
+    return redirect(user.role === "ADMIN" ? "/admin/dashboard" : "/dashboard");
   }
   return null;
 }
@@ -120,7 +120,7 @@ export default function Login() {
             <div className="text-sm">
               <Link
                 to="/reset-password"
-                className="font-medium text-blue-600 hover:text-blue-500"
+                className="font-medium text-[#CFB933] hover:text-blue-500"
               >
                 {T("login.forgot-password")}
               </Link>
@@ -130,7 +130,7 @@ export default function Login() {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#CFB933] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               {T("login.sign-in")}
             </button>

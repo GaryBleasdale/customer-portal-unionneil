@@ -1,36 +1,30 @@
-import { json, type ActionFunctionArgs } from '@remix-run/node'
-import { Form, useActionData, useLocation, Outlet } from '@remix-run/react'
+import { json, type ActionFunctionArgs } from "@remix-run/node";
+import { Form, useActionData, useLocation, Outlet } from "@remix-run/react";
 import { prisma } from "~/utils/prisma.server";
 import { sendPasswordResetEmail } from "~/utils/email.server";
-import T from '~/utils/translate'
+import T from "~/utils/translate";
 
 export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData()
-  const email = formData.get('email')
+  const formData = await request.formData();
+  const email = formData.get("email");
 
-  if (!email || typeof email !== 'string') {
-    return json(
-      { error: T('errors.email-required') },
-      { status: 400 }
-    )
+  if (!email || typeof email !== "string") {
+    return json({ error: T("errors.email-required") }, { status: 400 });
   }
 
-  if (!email.includes('@')) {
-    return json(
-      { error: T('errors.invalid-email') },
-      { status: 400 }
-    )
+  if (!email.includes("@")) {
+    return json({ error: T("errors.invalid-email") }, { status: 400 });
   }
 
   try {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       // Don't reveal whether a user exists
-      return json({ 
-        success: true, 
-        message: T('reset-password.email-sent'),
-        details: T('reset-password.email-sent-message')
-      })
+      return json({
+        success: true,
+        message: T("reset-password.email-sent"),
+        details: T("reset-password.email-sent-message"),
+      });
     }
 
     // Generate a random token
@@ -65,11 +59,11 @@ export async function action({ request }: ActionFunctionArgs) {
         );
       }
 
-      return json({ 
-        success: true, 
-        message: T('reset-password.email-sent'),
-        details: T('reset-password.email-sent-message')
-      })
+      return json({
+        success: true,
+        message: T("reset-password.email-sent"),
+        details: T("reset-password.email-sent-message"),
+      });
     } catch (error) {
       console.error("Error in password reset:", error);
       const errorMessage =
@@ -102,10 +96,10 @@ export default function ResetPassword() {
         <div className="max-w-md w-full space-y-8">
           <div>
             <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-              {T('reset-password.title')}
+              {T("reset-password.title")}
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
-              {T('reset-password.subtitle')}
+              {T("reset-password.subtitle")}
             </p>
           </div>
 
@@ -127,7 +121,7 @@ export default function ResetPassword() {
               <div className="rounded-md shadow-sm -space-y-px">
                 <div>
                   <label htmlFor="email" className="sr-only">
-                    {T('login.email-address')}
+                    {T("login.email-address")}
                   </label>
                   <input
                     id="email"
@@ -136,7 +130,7 @@ export default function ResetPassword() {
                     autoComplete="email"
                     required
                     className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                    placeholder={T('login.email-address')}
+                    placeholder={T("login.email-address")}
                   />
                 </div>
               </div>
@@ -156,9 +150,9 @@ export default function ResetPassword() {
               <div>
                 <button
                   type="submit"
-                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#CFB933] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
-                  {T('reset-password.submit')}
+                  {T("reset-password.submit")}
                 </button>
               </div>
             </Form>

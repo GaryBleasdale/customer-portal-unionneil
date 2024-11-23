@@ -18,7 +18,7 @@ export async function sendPasswordResetEmail(email: string, resetLink: string) {
           <h2>Password Reset Request</h2>
           <p>We received a request to reset your password. Click the link below to set a new password:</p>
           <p style="margin: 20px 0;">
-            <a href="${resetLink}" style="background-color: #0066cc; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+            <a href="https://portal.unionneil.com.br/reset-password/${resetLink}" style="background-color: #0066cc; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
               Reset Password
             </a>
           </p>

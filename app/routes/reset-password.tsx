@@ -62,8 +62,6 @@ export async function action({ request }: ActionFunctionArgs) {
 
       return json({
         success: true,
-        message: T("reset-password.email-sent"),
-        details: T("reset-password.email-sent-message"),
       });
     } catch (error) {
       console.error("Error in password reset:", error);
@@ -109,10 +107,10 @@ export default function ResetPassword() {
               <div className="flex">
                 <div className="ml-3">
                   <h3 className="text-sm font-medium text-green-800">
-                    {actionData.message}
+                    {T("reset-password.email-sent")}
                   </h3>
                   <div className="mt-2 text-sm text-green-700">
-                    <p>{actionData.details}</p>
+                    <p>{T("reset-password.email-sent-message")}</p>
                   </div>
                 </div>
               </div>

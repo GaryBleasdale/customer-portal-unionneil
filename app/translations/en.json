@@ -36,6 +36,21 @@
         "search": "Search customers...",
         "customer-details": "Customer Details",
         "no-customers": "No customers found",
+        "contract": {
+            "title": "Create Patient Contract",
+            "patient_name": "Patient Name",
+            "patient_cpf": "Patient CPF",
+            "legal_rep_name": "Legal Representative Name",
+            "legal_rep_cpf": "Legal Representative CPF",
+            "address": "Address",
+            "services": "Services Description",
+            "start_date": "Contract Start Date",
+            "price": "Service Price",
+            "signature": "Signature Details",
+            "create_contract": "Generate Contract",
+            "contract_created_success": "Contract created successfully!",
+            "open_document": "Open Document"
+        },
         "customer": {
             "name": "Name",
             "email": "Email",

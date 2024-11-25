@@ -3,7 +3,9 @@ node_modules
 /.cache
 /public/build
 /build
+
 .env
+toDo.md
 
 # Local Netlify folder
 .netlify

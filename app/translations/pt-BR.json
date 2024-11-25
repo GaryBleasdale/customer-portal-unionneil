@@ -36,6 +36,21 @@
         "search": "Pesquisar clientes...",
         "customer-details": "Detalhes do Cliente",
         "no-customers": "Nenhum cliente encontrado",
+        "contract": {
+            "title": "Criar Contrato de Paciente",
+            "patient_name": "Nome do Paciente",
+            "patient_cpf": "CPF do Paciente",
+            "legal_rep_name": "Nome do Representante Legal",
+            "legal_rep_cpf": "CPF do Representante Legal",
+            "address": "Endereço",
+            "services": "Descrição dos Serviços",
+            "start_date": "Data de Início do Contrato",
+            "price": "Preço do Serviço",
+            "signature": "Detalhes da Assinatura",
+            "create_contract": "Gerar Contrato",
+            "contract_created_success": "Contrato criado com sucesso!",
+            "open_document": "Abrir Documento"
+        },
         "customer": {
             "name": "Nome",
             "email": "Email",

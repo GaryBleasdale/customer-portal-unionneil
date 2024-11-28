@@ -1,10 +1,23 @@
-import { json, redirect, type ActionFunctionArgs } from "@remix-run/node";
+import {
+  json,
+  redirect,
+  type ActionFunctionArgs,
+  type LoaderFunctionArgs,
+} from "@remix-run/node";
 import type { MetaFunction } from "@remix-run/node";
-import { Form, useActionData, Outlet } from "@remix-run/react";
+import { Form, useActionData, Outlet, useLoaderData } from "@remix-run/react";
 import { prisma } from "~/utils/prisma.server";
 import { hashPassword } from "~/utils/auth.server";
 import T from "~/utils/translate";
 import { sendNewCustomerAlert } from "~/utils/email.server";
+import { useEffect, useRef, useState } from "react";
+import { cpf, cnpj } from "cpf-cnpj-validator";
+
+declare global {
+  interface Window {
+    google: any;
+  }
+}
 
 type ActionError = {
   email?: string;
@@ -19,6 +32,12 @@ export const meta: MetaFunction = () => {
     { name: "description", content: "Cadastro de Clientes da Union Neil" },
   ];
 };
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  return json({
+    googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
+  });
+}
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -56,26 +75,12 @@ export async function action({ request }: ActionFunctionArgs) {
         .filter(Boolean)
     : [];
 
-  // Validate required fields
-  if (!email) {
-    errors.email = "Email is required";
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    errors.email = "Invalid email format";
-  }
-
-  if (!password) {
-    errors.password = "Password is required";
-  } else if (password.length < 8) {
-    errors.password = "Password must be at least 8 characters long";
-  }
-
   // Check if user already exists
   const existingUser = await prisma.user.findUnique({ where: { email } });
   if (existingUser) {
     errors.email = "A user with this email already exists";
   }
 
-  // If there are any errors, return them
   if (Object.keys(errors).length > 0) {
     return json({ errors }, { status: 400 });
   }
@@ -108,6 +113,7 @@ export async function action({ request }: ActionFunctionArgs) {
         billingEmails,
       },
     });
+
     sendNewCustomerAlert(name, email);
     return redirect("/login");
   } catch (error) {
@@ -122,7 +128,72 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function Cadastro() {
+  const { googleMapsApiKey } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
+  const [address, setAddress] = useState("");
+  const [invoiceAddress, setInvoiceAddress] = useState("");
+  const addressInput = useRef<HTMLInputElement>(null);
+  const invoiceAddressInput = useRef<HTMLInputElement>(null);
+  console.log("action data", actionData);
+  useEffect(() => {
+    // Load Google Maps JavaScript API
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=places`;
+    script.async = true;
+    script.onload = initAutocomplete;
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, [googleMapsApiKey]);
+
+  const initAutocomplete = () => {
+    if (!addressInput.current || !invoiceAddressInput.current) return;
+
+    // Initialize patient address autocomplete
+    const addressAutocomplete = new window.google.maps.places.Autocomplete(
+      addressInput.current,
+      {
+        types: ["address"],
+        componentRestrictions: { country: ["BR"] },
+        fields: ["formatted_address", "place_id"],
+      }
+    );
+
+    addressAutocomplete.addListener("place_changed", () => {
+      const place = addressAutocomplete.getPlace();
+      if (place.formatted_address) {
+        setAddress(place.formatted_address);
+      }
+    });
+
+    // Initialize invoice address autocomplete
+    const invoiceAddressAutocomplete =
+      new window.google.maps.places.Autocomplete(invoiceAddressInput.current, {
+        types: ["address"],
+        componentRestrictions: { country: ["BR"] },
+        fields: ["formatted_address", "place_id"],
+      });
+
+    invoiceAddressAutocomplete.addListener("place_changed", () => {
+      const place = invoiceAddressAutocomplete.getPlace();
+      if (place.formatted_address) {
+        setInvoiceAddress(place.formatted_address);
+      }
+    });
+  };
+
+  function testCPF(e: any) {
+    if (cpf.isValid(e.target.value)) {
+      e.target.value = cpf.format(e.target.value);
+    } else if (cnpj.isValid(e.target.value)) {
+      e.target.value = cnpj.format(e.target.value);
+    } else {
+      e.target.value = "";
+      e.target.placeholder = "por favor insira um CPF/CNPJ válido";
+    }
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 ">
@@ -163,8 +234,15 @@ export default function Cadastro() {
                   id="name"
                   name="name"
                   type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 ${
+                    actionData?.errors?.fields?.name ? "border-red-300" : ""
+                  }`}
                 />
+                {actionData?.errors?.fields?.name && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {T(`errors.${actionData.errors.fields.name}`)}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -188,6 +266,7 @@ export default function Cadastro() {
                 />
                 {actionData?.errors?.email && (
                   <p className="mt-1 text-sm text-red-600">
+                    {`${actionData.errors.email}`}
                     {T(`errors.${actionData.errors.email}`)}
                   </p>
                 )}
@@ -230,8 +309,18 @@ export default function Cadastro() {
                   id="cpf"
                   name="cpf"
                   type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 ${
+                    actionData?.errors?.fields?.cpf ? "border-red-300" : ""
+                  }`}
+                  onBlur={(e) => {
+                    testCPF(e);
+                  }}
                 />
+                {actionData?.errors?.fields?.cpf && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {T(`errors.${actionData.errors.fields.cpf}`)}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -241,12 +330,28 @@ export default function Cadastro() {
                 >
                   {T("cadastro.complete-address")}
                 </label>
-                <textarea
+                <input
                   id="address"
                   name="address"
-                  rows={3}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  type="text"
+                  ref={addressInput}
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  className={`mt-1 block w-full rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
+                    actionData?.errors?.fields?.address
+                      ? "border-red-300"
+                      : "border-gray-300"
+                  }`}
+                  placeholder="Type an address or select from suggestions"
                 />
+                <p className="mt-1 text-sm text-gray-500">
+                  {T("cadastro.address-suggestion-help")}
+                </p>
+                {actionData?.errors?.fields?.address && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {T(`errors.${actionData.errors.fields.address}`)}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -260,8 +365,17 @@ export default function Cadastro() {
                   id="nationality"
                   name="nationality"
                   type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 ${
+                    actionData?.errors?.fields?.nationality
+                      ? "border-red-300"
+                      : ""
+                  }`}
                 />
+                {actionData?.errors?.fields?.nationality && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {T(`errors.${actionData.errors.fields.nationality}`)}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -283,8 +397,17 @@ export default function Cadastro() {
                   id="legalRepName"
                   name="legalRepName"
                   type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 ${
+                    actionData?.errors?.fields?.legalRepName
+                      ? "border-red-300"
+                      : ""
+                  }`}
                 />
+                {actionData?.errors?.fields?.legalRepName && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {T(`errors.${actionData.errors.fields.legalRepName}`)}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -298,8 +421,20 @@ export default function Cadastro() {
                   id="legalRepCpf"
                   name="legalRepCpf"
                   type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 ${
+                    actionData?.errors?.fields?.legalRepCpf
+                      ? "border-red-300"
+                      : ""
+                  }`}
+                  onBlur={(e) => {
+                    testCPF(e);
+                  }}
                 />
+                {actionData?.errors?.fields?.legalRepCpf && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {T(`errors.${actionData.errors.fields.legalRepCpf}`)}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -313,8 +448,19 @@ export default function Cadastro() {
                   id="legalRepNationality"
                   name="legalRepNationality"
                   type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 ${
+                    actionData?.errors?.fields?.legalRepNationality
+                      ? "border-red-300"
+                      : ""
+                  }`}
                 />
+                {actionData?.errors?.fields?.legalRepNationality && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {T(
+                      `errors.${actionData.errors.fields.legalRepNationality}`
+                    )}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -343,8 +489,17 @@ export default function Cadastro() {
                   id="legalRepEmail"
                   name="legalRepEmail"
                   type="email"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 ${
+                    actionData?.errors?.fields?.legalRepEmail
+                      ? "border-red-300"
+                      : ""
+                  }`}
                 />
+                {actionData?.errors?.fields?.legalRepEmail && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {T(`errors.${actionData.errors.fields.legalRepEmail}`)}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -366,8 +521,17 @@ export default function Cadastro() {
                   id="invoiceName"
                   name="invoiceName"
                   type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 ${
+                    actionData?.errors?.fields?.invoiceName
+                      ? "border-red-300"
+                      : ""
+                  }`}
                 />
+                {actionData?.errors?.fields?.invoiceName && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {T(`errors.${actionData.errors.fields.invoiceName}`)}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -381,8 +545,20 @@ export default function Cadastro() {
                   id="invoiceCpfCnpj"
                   name="invoiceCpfCnpj"
                   type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 ${
+                    actionData?.errors?.fields?.invoiceCpfCnpj
+                      ? "border-red-300"
+                      : ""
+                  }`}
+                  onBlur={(e) => {
+                    testCPF(e);
+                  }}
                 />
+                {actionData?.errors?.fields?.invoiceCpfCnpj && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {T(`errors.${actionData.errors.fields.invoiceCpfCnpj}`)}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -392,12 +568,28 @@ export default function Cadastro() {
                 >
                   {T("cadastro.invoice-address")}
                 </label>
-                <textarea
+                <input
                   id="invoiceAddress"
                   name="invoiceAddress"
-                  rows={3}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  type="text"
+                  ref={invoiceAddressInput}
+                  value={invoiceAddress}
+                  onChange={(e) => setInvoiceAddress(e.target.value)}
+                  className={`mt-1 block w-full rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
+                    actionData?.errors?.fields?.invoiceAddress
+                      ? "border-red-300"
+                      : "border-gray-300"
+                  }`}
+                  placeholder="Type an address or select from suggestions"
                 />
+                <p className="mt-1 text-sm text-gray-500">
+                  {T("cadastro.address-suggestion-help")}
+                </p>
+                {actionData?.errors?.fields?.invoiceAddress && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {T(`errors.${actionData.errors.fields.invoiceAddress}`)}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -411,8 +603,17 @@ export default function Cadastro() {
                   id="invoiceEmail"
                   name="invoiceEmail"
                   type="email"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 ${
+                    actionData?.errors?.fields?.invoiceEmail
+                      ? "border-red-300"
+                      : ""
+                  }`}
                 />
+                {actionData?.errors?.fields?.invoiceEmail && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {T(`errors.${actionData.errors.fields.invoiceEmail}`)}
+                  </p>
+                )}
               </div>
 
               <div>

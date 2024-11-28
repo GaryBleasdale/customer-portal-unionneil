@@ -38,6 +38,9 @@ model User {
   // Billing Information
   billingEmails       String[] @default([]) // Array of emails for monthly billing
 
+  // Key Documents
+  contractUrl           String?
+
   // Password Reset
   passwordResetToken  PasswordResetToken?
   

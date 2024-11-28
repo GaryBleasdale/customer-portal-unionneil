@@ -5,6 +5,7 @@ import {
 } from "@remix-run/node";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { requireAdmin } from "~/utils/auth.server";
+import { prisma } from "~/utils/prisma.server";
 import { google } from "googleapis";
 import { z } from "zod";
 import T from "~/utils/translate";
@@ -27,12 +28,25 @@ const ContractSchema = z.object({
   signature: z.string().min(3, "Signature details are required"),
 });
 
+function formatCPF(cpf: number) {
+  return cpf.toString().replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+}
+
 // Loader to check admin authentication
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireAdmin(request);
+
+  const customer = await prisma.user.findUnique({
+    where: { id: params.customerId },
+  });
+
+  if (!customer) {
+    throw new Response("Customer not found", { status: 404 });
+  }
   return json({
     googleClientId: process.env.GOOGLE_CLIENT_ID,
     googleRedirectUri: process.env.GOOGLE_REDIRECT_URI,
+    customer,
   });
 }
 
@@ -189,7 +203,8 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function AdminContractRoute() {
-  const { googleClientId, googleRedirectUri } = useLoaderData<typeof loader>();
+  const { googleClientId, googleRedirectUri, customer } =
+    useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
 
   return (
@@ -229,6 +244,7 @@ export default function AdminContractRoute() {
             </label>
             <input
               type="text"
+              defaultValue={customer.name}
               name="patientName"
               id="patientName"
               required
@@ -247,6 +263,7 @@ export default function AdminContractRoute() {
               type="text"
               name="patientCPF"
               id="patientCPF"
+              defaultValue={formatCPF(customer.cpf)}
               required
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             />
@@ -265,6 +282,7 @@ export default function AdminContractRoute() {
               type="text"
               name="legalRepName"
               id="legalRepName"
+              defaultValue={customer.legalRepName}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             />
           </div>
@@ -280,6 +298,7 @@ export default function AdminContractRoute() {
               type="text"
               name="legalRepCPF"
               id="legalRepCPF"
+              defaultValue={formatCPF(customer.legalRepCpf)}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             />
           </div>
@@ -296,6 +315,7 @@ export default function AdminContractRoute() {
             type="text"
             name="address"
             id="address"
+            defaultValue={customer.address}
             required
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           />

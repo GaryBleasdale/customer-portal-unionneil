@@ -22,7 +22,8 @@ export default function CustomerDetails() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {location.pathname.includes("createContract") ? (
+      {location.pathname.includes("createContract") ||
+      location.pathname.includes("uploadContract") ? (
         <Outlet />
       ) : (
         <div>
@@ -44,13 +45,20 @@ export default function CustomerDetails() {
                 </button>
               </div>
             ) : (
-              <a
-                href={`${location.pathname}/createContract`} // Replace this with your fallback URL
-                rel="noopener noreferrer"
-                className="text-blue-500 underline"
-              >
-                Create Contract
-              </a>
+              <div className="space-x-4">
+                <a
+                  href={`${location.pathname}/createContract`}
+                  className="text-blue-500 underline"
+                >
+                  Create Contract
+                </a>
+                <a
+                  href={`${location.pathname}/uploadContract`}
+                  className="text-blue-500 underline"
+                >
+                  Add Signed Contract
+                </a>
+              </div>
             )}
           </div>
           <h1 className="text-2xl font-bold mb-8">Customer Details</h1>

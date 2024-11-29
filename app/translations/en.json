@@ -49,7 +49,13 @@
             "signature": "Signature Details",
             "create_contract": "Generate Contract",
             "contract_created_success": "Contract created successfully!",
-            "open_document": "Open Document"
+            "open_document": "Open Document",
+            "upload_title": "Upload Signed Contract",
+            "select_file": "Select contract file",
+            "upload_button": "Upload Contract",
+            "cancel": "Cancel",
+            "upload_success": "Contract uploaded successfully!",
+            "view_uploaded_contract": "View Uploaded Contract"
         },
         "customer": {
             "name": "Name",

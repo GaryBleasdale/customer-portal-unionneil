@@ -49,7 +49,13 @@
             "signature": "Detalhes da Assinatura",
             "create_contract": "Gerar Contrato",
             "contract_created_success": "Contrato criado com sucesso!",
-            "open_document": "Abrir Documento"
+            "open_document": "Abrir Documento",
+            "upload_title": "Enviar Contrato Assinado",
+            "select_file": "Selecionar arquivo do contrato",
+            "upload_button": "Enviar Contrato",
+            "upload_success": "Contrato enviado com sucesso!",
+            "view_uploaded_contract": "Ver Contrato Enviado",
+            "cancel": "Cancelar"
         },
         "customer": {
             "name": "Nome",

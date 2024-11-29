@@ -35,6 +35,7 @@ function translator(text:string, lang:unknown){
     const subcontent = text.split(".")[2];
     
     if(subcontent){
+      console.log(subcontent, content, pageGroup);
       return lang[pageGroup][content][subcontent];
     }
     return lang[pageGroup][content];

@@ -133,7 +133,12 @@
             "active": "Active",
             "never": "Never"
         },
-        "not-provided": "Not provided"
+        "not-provided": "Not provided",
+        "my-documents": {
+            "title": "My Documents",
+            "view-contract": "View Contract",
+            "no-contract": "No documents found yet"
+        }
     },
     "errors": {
         "email-required": "Email is required",

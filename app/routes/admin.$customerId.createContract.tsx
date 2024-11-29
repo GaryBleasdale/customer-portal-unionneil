@@ -21,10 +21,8 @@ const ContractSchema = z.object({
   legalRepRelationship: z.string().optional(),
   address: z.string().min(5, "Address is required"),
   services: z.string().min(10, "Service description is required"),
-  startDate: z
-    .string()
-    .refine((val) => !isNaN(Date.parse(val)), "Invalid date"),
-  price: z.string().regex(/^\d+(\.\d{1,2})?$/, "Invalid price format"),
+  startDate: z.string(),
+  price: z.string(),
   signature: z.string().min(3, "Signature details are required"),
 });
 
@@ -47,7 +45,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 // Action to create Google Docs contract
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   await requireAdmin(request);
 
   const formData = await request.formData();
@@ -441,13 +439,13 @@ export default function AdminContractRoute() {
               htmlFor="startDate"
               className="block text-sm font-medium text-gray-700"
             >
-              {T("admin.contract.start_date")}
+              Contract Start Date
             </label>
             <input
-              type="date"
+              type="text"
               name="startDate"
               id="startDate"
-              required
+              defaultValue={customer.startDate}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             />
           </div>
@@ -457,21 +455,15 @@ export default function AdminContractRoute() {
               htmlFor="price"
               className="block text-sm font-medium text-gray-700"
             >
-              {T("admin.contract.price")}
+              Service Price
             </label>
-            <div className="relative mt-1">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span className="text-gray-500 sm:text-sm">R$</span>
-              </div>
-              <input
-                type="number"
-                name="price"
-                id="price"
-                step="0.01"
-                required
-                className="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              />
-            </div>
+            <input
+              type="text"
+              name="price"
+              id="price"
+              defaultValue={customer.price}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
           </div>
         </div>
 
@@ -480,13 +472,13 @@ export default function AdminContractRoute() {
             htmlFor="signature"
             className="block text-sm font-medium text-gray-700"
           >
-            {T("admin.contract.signature")}
+            Date of Signature
           </label>
           <input
             type="text"
             name="signature"
             id="signature"
-            required
+            defaultValue={customer.signature}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           />
         </div>

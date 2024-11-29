@@ -32,7 +32,7 @@ export default function CustomerDetails() {
             {customer.contractUrl ? (
               <div>
                 <a
-                  href={`https://${customer.contractUrl}`}
+                  href={customer.contractUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-500 underline"

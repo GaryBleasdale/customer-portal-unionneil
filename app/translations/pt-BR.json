@@ -133,6 +133,11 @@
             "active": "Ativa",
             "never": "Nunca"
         },
+        "my-documents": {
+            "title": "Meus Documentos",
+            "view-contract": "Ver Contrato",
+            "no-contract": "Nenhum documento encontrado ainda"
+        },
         "not-provided": "Não fornecido"
     },
     "errors": {

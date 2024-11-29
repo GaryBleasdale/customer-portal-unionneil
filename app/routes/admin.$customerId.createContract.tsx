@@ -13,12 +13,12 @@ import T from "~/utils/translate";
 // Input validation schema
 const ContractSchema = z.object({
   patientName: z.string().min(2, "Patient name is required"),
-  patientCPF: z.string().regex(/^\d{11}$/, "Invalid CPF format"),
+  patientCPF: z.string(),
+  patientNationality: z.string().optional(),
   legalRepName: z.string().optional(),
-  legalRepCPF: z
-    .string()
-    .regex(/^\d{11}$/, "Invalid CPF format")
-    .optional(),
+  legalRepCPF: z.string(),
+  legalRepNationality: z.string().optional(),
+  legalRepRelationship: z.string().optional(),
   address: z.string().min(5, "Address is required"),
   services: z.string().min(10, "Service description is required"),
   startDate: z
@@ -27,10 +27,6 @@ const ContractSchema = z.object({
   price: z.string().regex(/^\d+(\.\d{1,2})?$/, "Invalid price format"),
   signature: z.string().min(3, "Signature details are required"),
 });
-
-function formatCPF(cpf: number) {
-  return cpf.toString().replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
-}
 
 // Loader to check admin authentication
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -103,9 +99,7 @@ export async function action({ request }: ActionFunctionArgs) {
       fileId: templateDocId,
       supportsAllDrives: true,
       requestBody: {
-        name: `Contract for ${
-          validatedData.patientName
-        } - ${new Date().toLocaleDateString()}`,
+        name: `Contrato de Prestação de Serviços - Union Neil & ${validatedData.patientName}`,
         mimeType: "application/vnd.google-apps.document",
       },
     });
@@ -119,55 +113,109 @@ export async function action({ request }: ActionFunctionArgs) {
         requests: [
           {
             replaceAllText: {
-              containsText: { text: "{{PATIENT_NAME}}" },
+              containsText: {
+                text: "{{PATIENT_NATIONALITY}}",
+                matchCase: true,
+              },
+              replaceText: validatedData.patientNationality || "Not provided",
+            },
+          },
+          {
+            replaceAllText: {
+              containsText: {
+                text: "{{LEGAL_REP_NATIONALITY}}",
+                matchCase: true,
+              },
+              replaceText: validatedData.legalRepNationality || "Not provided",
+            },
+          },
+          {
+            replaceAllText: {
+              containsText: {
+                text: "{{RELATIONSHIP_TO_PATIENT}}",
+                matchCase: true,
+              },
+              replaceText: validatedData.legalRepRelationship || "Not provided",
+            },
+          },
+          {
+            replaceAllText: {
+              containsText: {
+                text: "{{PATIENT_NAME}}",
+                matchCase: true,
+              },
               replaceText: validatedData.patientName,
             },
           },
           {
             replaceAllText: {
-              containsText: { text: "{{PATIENT_CPF}}" },
+              containsText: {
+                text: "{{PATIENT_CPF}}",
+                matchCase: true,
+              },
               replaceText: validatedData.patientCPF,
             },
           },
           {
             replaceAllText: {
-              containsText: { text: "{{LEGAL_REP_NAME}}" },
+              containsText: {
+                text: "{{LEGAL_REP_NAME}}",
+                matchCase: true,
+              },
               replaceText: validatedData.legalRepName || "",
             },
           },
           {
             replaceAllText: {
-              containsText: { text: "{{LEGAL_REP_CPF}}" },
+              containsText: {
+                text: "{{LEGAL_REP_CPF}}",
+                matchCase: true,
+              },
               replaceText: validatedData.legalRepCPF || "",
             },
           },
           {
             replaceAllText: {
-              containsText: { text: "{{ADDRESS}}" },
+              containsText: {
+                text: "{{ADDRESS}}",
+                matchCase: true,
+              },
               replaceText: validatedData.address,
             },
           },
           {
             replaceAllText: {
-              containsText: { text: "{{SERVICES}}" },
+              containsText: {
+                text: "{{SERVICES}}",
+                matchCase: true,
+              },
               replaceText: validatedData.services,
             },
           },
           {
             replaceAllText: {
-              containsText: { text: "{{START_DATE}}" },
+              containsText: {
+                text: "{{START_DATE}}",
+                matchCase: true,
+              },
               replaceText: validatedData.startDate,
             },
           },
           {
             replaceAllText: {
-              containsText: { text: "{{PRICE}}" },
+              containsText: {
+                text: "{{PRICE}}",
+                matchCase: true,
+              },
               replaceText: validatedData.price,
             },
           },
           {
             replaceAllText: {
-              containsText: { text: "{{SIGNATURE}}" },
+              containsText: {
+                text: "{{SIGNATURE}}",
+                matchCase: true,
+              },
               replaceText: validatedData.signature,
             },
           },
@@ -263,7 +311,7 @@ export default function AdminContractRoute() {
               type="text"
               name="patientCPF"
               id="patientCPF"
-              defaultValue={formatCPF(customer.cpf)}
+              defaultValue={customer.cpf}
               required
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             />
@@ -271,6 +319,22 @@ export default function AdminContractRoute() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <label
+              htmlFor="patientNationality"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Patient Nationality
+            </label>
+            <input
+              type="text"
+              name="patientNationality"
+              id="patientNationality"
+              defaultValue={customer.nationality}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
+
           <div>
             <label
               htmlFor="legalRepName"
@@ -286,6 +350,24 @@ export default function AdminContractRoute() {
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             />
           </div>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <label
+              htmlFor="legalRepNationality"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Legal Representative Nationality
+            </label>
+            <input
+              type="text"
+              name="legalRepNationality"
+              id="legalRepNationality"
+              defaultValue={customer.legalRepNationality}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
 
           <div>
             <label
@@ -298,10 +380,26 @@ export default function AdminContractRoute() {
               type="text"
               name="legalRepCPF"
               id="legalRepCPF"
-              defaultValue={formatCPF(customer.legalRepCpf)}
+              defaultValue={customer.legalRepCpf}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             />
           </div>
+        </div>
+
+        <div>
+          <label
+            htmlFor="legalRepRelationship"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Relationship to Patient
+          </label>
+          <input
+            type="text"
+            name="legalRepRelationship"
+            id="legalRepRelationship"
+            defaultValue={customer.legalRepRelationship}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          />
         </div>
 
         <div>

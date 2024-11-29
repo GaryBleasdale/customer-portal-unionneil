@@ -40,7 +40,7 @@ export async function sendPasswordResetEmail(email: string, resetLink: string) {
   }
 }
 
-export async function sendNewCustomerAlert(customerName: string, customerEmail: string) {
+export async function sendNewCustomerAlert(customerName: string, customerEmail: string, newUserId: string = '') {
   console.log('Starting sendNewCustomerAlert function');
   try {
     console.log('Attempting to send new customer alert email');
@@ -58,7 +58,7 @@ export async function sendNewCustomerAlert(customerName: string, customerEmail: 
           <h2>New Customer Alert</h2>
           <p>A new customer, <strong>${customerName.toUpperCase()}</strong> (${customerEmail}), has signed up on the portal. Click the link below to see the details:</p>
           <p style="margin: 20px 0;">
-            <a href="/admin" style="background-color: #0066cc; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+            <a href="https://portal.unionneil.com.br/admin/${newUserId}" style="background-color: #0066cc; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
               View Customer Details
             </a>
           </p>

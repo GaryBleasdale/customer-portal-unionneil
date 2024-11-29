@@ -114,7 +114,14 @@ export async function action({ request }: ActionFunctionArgs) {
       },
     });
 
-    sendNewCustomerAlert(name, email);
+    let newUser = await prisma.user.findFirst({
+      where: { email },
+      select: { id: true },
+    });
+
+    const newUserId = newUser?.id || "";
+
+    sendNewCustomerAlert(name, email, newUserId);
     return redirect("/login");
   } catch (error) {
     console.error("Registration error:", error);
@@ -216,7 +223,15 @@ export default function Cadastro() {
           </div>
         )}
 
-        <Form method="post" className="mt-8 space-y-6">
+        <Form
+          method="post"
+          className="mt-8 space-y-6"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+            }
+          }}
+        >
           {/* Basic Information */}
           <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="text-lg font-medium mb-4">

@@ -1,6 +1,7 @@
+import fs from "node:fs";
+import path from "node:path";
 import { createRequire } from "node:module";
-const require = createRequire(import.meta.url);
-const pdfParse = require("pdf-parse");
+import PDFParser from "pdf2json";
 
 export type ProcessedPDF = {
   buffer: Buffer;
@@ -9,33 +10,47 @@ export type ProcessedPDF = {
 
 export default async function renameBoletos(pdfBuffers: { buffer: Buffer; originalName: string }[]): Promise<ProcessedPDF[]> {
   async function processPDF(buffer: Buffer, originalName: string): Promise<ProcessedPDF | null> {
-    try {
-      const data = await pdfParse(buffer);
-      const text = data.text;
+    return new Promise((resolve, reject) => {
+      const pdfParser = new PDFParser();
 
-      if (text.includes("RECIBO DO PAGADOR")) {
-        const pagadorMatch = text.match(/PAGADOR: (.*?)(\n|$)/i);
-        if (pagadorMatch && pagadorMatch[1]) {
-          let pagadorName = pagadorMatch[1].trim();
-          // Replace or remove illegal characters in the filename
-          pagadorName = pagadorName.replace(/[^a-zA-Z0-9 \-_]/g, "_");
-          
-          return {
-            buffer,
-            filename: `${pagadorName}.pdf`
-          };
-        } else {
-          console.log(`PAGADOR: not found in ${originalName}`);
-          return null;
+      pdfParser.on("pdfParser_dataReady", (pdfData) => {
+        try {
+          // pdf2json returns encoded text, we need to decode it
+          const text = decodeURIComponent(pdfData.Pages[0].Texts.map(text => text.R[0].T).join(' '));
+
+          if (text.includes("RECIBO DO PAGADOR")) {
+            const pagadorMatch = text.match(/PAGADOR: (.*?)(\n|$)/i);
+            if (pagadorMatch && pagadorMatch[1]) {
+              let pagadorName = pagadorMatch[1].trim();
+              // Replace or remove illegal characters in the filename
+              pagadorName = pagadorName.replace(/[^a-zA-Z0-9 \-_]/g, "_");
+              
+              resolve({
+                buffer,
+                filename: `${pagadorName}.pdf`
+              });
+            } else {
+              console.log(`PAGADOR: not found in ${originalName}`);
+              resolve(null);
+            }
+          } else {
+            console.log(`RECIBO DE PAGADOR not found in ${originalName}`);
+            resolve(null);
+          }
+        } catch (err) {
+          console.error(`Error processing ${originalName}:`, err);
+          resolve(null);
         }
-      } else {
-        console.log(`RECIBO DE PAGADOR not found in ${originalName}`);
-        return null;
-      }
-    } catch (err) {
-      console.error(`Error processing ${originalName}:`, err);
-      return null;
-    }
+      });
+
+      pdfParser.on("pdfParser_dataError", (err) => {
+        console.error(`Error parsing ${originalName}:`, err);
+        resolve(null);
+      });
+
+      // Parse the PDF buffer
+      pdfParser.parseBuffer(buffer);
+    });
   }
 
   const processedPDFs: ProcessedPDF[] = [];

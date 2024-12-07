@@ -2,6 +2,7 @@ import { json, redirect, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
 import { requireUser } from "~/utils/auth.server";
 import { prisma } from "~/utils/prisma.server";
+import Sidebar from "../components/ui/Sidebar";
 import T from "~/utils/translate";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -27,7 +28,12 @@ export default function Admin() {
 
   return (
     <div className="py-10">
-      <Outlet />
+      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 grid">
+        <div className="px-4 py-6 sm:px-0 grid grid-cols-[repeat(2,1fr)]">
+          <Sidebar />
+          <Outlet />
+        </div>
+      </div>
     </div>
   );
 }

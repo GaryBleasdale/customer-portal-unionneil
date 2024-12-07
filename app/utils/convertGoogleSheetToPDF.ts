@@ -1,40 +1,31 @@
-import fs from "node:fs";
-import path from "node:path";
-import { createRequire } from "node:module";
-import { fileURLToPath } from "node:url";
-const require = createRequire(import.meta.url);
-const { google } = require("googleapis");
+import { google } from "googleapis";
+import { Readable } from "stream";
 const drive = google.drive("v3");
 
 export default async function convertGoogleSheetToPDF(
-  sourceFolderId,
-  destinationFolderId,
-  CLIENT_ID,
-  CLIENT_SECRET,
-  REFRESH_TOKEN,
+  sourceFolderId: string,
+  destinationFolderId: string,
+  CLIENT_ID: string,
+  CLIENT_SECRET: string,
+  REFRESH_TOKEN: string,
 ) {
-  // ES module workaround for __dirname
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-
   const oAuth2Client = new google.auth.OAuth2(
     CLIENT_ID,
     CLIENT_SECRET
   );
   oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
 
-  async function listFiles(auth, folderId) {
+  async function listFiles(auth) {
     const res = await drive.files.list({
       auth,
-      q: `'${folderId}' in parents and mimeType='application/vnd.google-apps.spreadsheet'`,
+      q: `'${sourceFolderId}' in parents and mimeType='application/vnd.google-apps.spreadsheet'`,
       fields: "files(id, name)",
     });
     return res.data.files;
   }
 
-  async function downloadAsPDF(auth, fileId, outputPath) {
+  async function downloadAsPDF(auth, fileId): Promise<Buffer> {
     return new Promise((resolve, reject) => {
-      const dest = fs.createWriteStream(outputPath);
       drive.files.export(
         {
           auth,
@@ -48,31 +39,39 @@ export default async function convertGoogleSheetToPDF(
             reject(err);
             return;
           }
+
+          const chunks: Buffer[] = [];
           res.data
+            .on("data", (chunk) => chunks.push(Buffer.from(chunk)))
             .on("end", () => {
               console.log("Done downloading file.");
-              dest.close(); // Close the stream to ensure the file is fully written
-              resolve();
+              resolve(Buffer.concat(chunks));
             })
             .on("error", (err) => {
               console.error("Error downloading file:", err);
               reject(err);
-            })
-            .pipe(dest);
-        },
+            });
+        }
       );
     });
   }
 
-  async function uploadFile(auth, fileName, filePath, folderId) {
+  async function uploadFile(auth, fileName: string, fileBuffer: Buffer, folderId: string) {
     const fileMetadata = {
       name: fileName,
-      parents: [folderId], // Specify the destination folder ID
+      parents: [folderId],
     };
+
+    // Create a readable stream from the buffer
+    const readable = new Readable();
+    readable.push(fileBuffer);
+    readable.push(null);
+
     const media = {
       mimeType: "application/pdf",
-      body: fs.createReadStream(filePath),
+      body: readable
     };
+
     const res = await drive.files.create({
       auth,
       resource: fileMetadata,
@@ -80,24 +79,30 @@ export default async function convertGoogleSheetToPDF(
       fields: "id",
     });
     console.log(`File uploaded successfully. File ID: ${res.data.id}`);
+    return res.data.id;
   }
 
-  async function downloadAndUploadSheetsAsPDFs() {
-    const files = await listFiles(oAuth2Client, sourceFolderId);
+  async function processSheets() {
+    const files = await listFiles(oAuth2Client);
     for (const file of files) {
-      const outputPath = path.join(__dirname, `${file.name}.pdf`);
-      console.log(`Downloading ${file.name} as PDF...`);
-      await downloadAsPDF(oAuth2Client, file.id, outputPath);
+      console.log(`Processing ${file.name}...`);
+      const startMemory = process.memoryUsage();
+      const pdfBuffer = await downloadAsPDF(oAuth2Client, file.id);
+      console.log(`Downloaded ${file.name}.pdf - Size: ${(pdfBuffer.length / 1024 / 1024).toFixed(2)}MB`);
+      console.log(`Memory usage after download: ${JSON.stringify({
+        heapUsed: `${((process.memoryUsage().heapUsed - startMemory.heapUsed) / 1024 / 1024).toFixed(2)}MB`,
+        rss: `${((process.memoryUsage().rss - startMemory.rss) / 1024 / 1024).toFixed(2)}MB`
+      })}`);
+      
       console.log(`Uploading ${file.name}.pdf to destination folder...`);
       await uploadFile(
         oAuth2Client,
         `${file.name}.pdf`,
-        outputPath,
-        destinationFolderId,
+        pdfBuffer,
+        destinationFolderId
       );
-      fs.unlinkSync(outputPath);
     }
   }
 
-  downloadAndUploadSheetsAsPDFs().catch(console.error);
+  await processSheets();
 }

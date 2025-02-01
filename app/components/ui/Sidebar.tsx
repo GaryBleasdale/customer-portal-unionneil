@@ -12,7 +12,8 @@ export default function Sidebar() {
         <span>Customers</span>
       </Link>
       <Link
-        to="/admin/uploadFiles"
+        to="uploadFiles"
+        relative="path"
         className="flex flex-row items-center hover:bg-[#cfb933] hover:text-white max-w-fit px-1 rounded-sm"
       >
         <CgNotes className="mr-1" />
